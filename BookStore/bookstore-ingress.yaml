@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookstore-ingress
+  namespace: bookstore
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - bookstore.io.vn
+    secretName: bookstore-tls-secret
+  rules:
+  - host: bookstore.io.vn
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-service
+            port:
+              number: 3000
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-service
+            port:
+              number: 8080
+      - path: /swagger-ui
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-service
+            port:
+              number: 8080
+      - path: /swagger-resources
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-service
+            port:
+              number: 8080
+      - path: /v3/api-docs
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-service
+            port:
+              number: 8080

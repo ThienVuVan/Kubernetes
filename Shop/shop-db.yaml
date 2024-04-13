@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+  namespace: shopquanao
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: thienvanvu/shop-app-db:v1
+        ports:
+        - containerPort: 1433
+          name: db-port
+        envFrom:
+        - configMapRef:
+            name: shop-configmap
+        volumeMounts:
+          - name: sql-data
+            mountPath: /var/opt/mssql/data/
+
+      volumes:
+        - name: sql-data
+          persistentVolumeClaim:
+            claimName: sql-server-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+spec:
+  selector:
+    app: db
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: db-port

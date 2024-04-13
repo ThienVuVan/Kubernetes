@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-deployment
+  namespace: bookstore
+  labels:
+    app: react
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: react
+  template:
+    metadata:
+      labels:
+        app: react
+    spec:
+      containers:
+      - name: react
+        image: thienvanvu/bookstore-react:latest
+        ports:
+        - containerPort: 80
+          name: react-port
+        envFrom:
+        - configMapRef:
+            name: bookstore-configmap
+        volumeMounts:
+          - name: data-image
+            mountPath: /usr/share/nginx/html/images/
+
+      volumes:
+        - name: data-image
+          persistentVolumeClaim:
+            claimName: image-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-service
+spec:
+  selector:
+    app: react
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: react-port

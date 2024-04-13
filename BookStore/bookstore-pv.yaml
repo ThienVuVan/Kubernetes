@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: image-pv
+spec:
+  storageClassName: mystorageclass
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 143.198.210.75
+    path: /home/thienvu/k8s/shared/image_data

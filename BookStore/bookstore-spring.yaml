@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-deployment
+  namespace: bookstore
+  labels:
+    app: spring
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spring
+  template:
+    metadata:
+      labels:
+        app: spring
+    spec:
+      containers:
+      - name: spring
+        image: thienvanvu/bookstore-spring:latest
+        ports:
+        - containerPort: 8080
+          name: spring-port
+        envFrom:
+        - configMapRef:
+            name: bookstore-configmap
+        volumeMounts:
+          - name: data-image
+            mountPath: /usr/share/nginx/html/images/
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "64m"
+          limits:
+            memory: "750Mi"
+            cpu: "500m"
+
+      volumes:
+        - name: data-image
+          persistentVolumeClaim:
+            claimName: image-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-service
+spec:
+  selector:
+    app: spring
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: spring-port

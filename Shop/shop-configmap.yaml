@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-configmap
+  namespace: shopquanao
+data:
+  ASPNETCORE_ENVIRONMENT: Production
+  SA_PASSWORD: 'Thien2410!'
+  ACCEPT_EULA: 'Y'
